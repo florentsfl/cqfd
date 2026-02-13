@@ -371,7 +371,11 @@ docker_run() {
 	fi
 
 	if [ "$CQFD_BIND_DOCKER_SOCK" = true ] || [ "$build_bind_docker_sock" = true ]; then
-		args+=(--volume /var/run/docker.sock:/var/run/docker.sock)
+		if [ "$cqfd_docker" = "podman" ] && [ -n "$cqfd_user_uid" ]; then
+			args+=(--volume "/run/user/$cqfd_user_uid/podman/podman.sock":"/run/user/$cqfd_user_uid/podman/podman.sock")
+		else
+			args+=(--volume /var/run/docker.sock:/var/run/docker.sock)
+		fi
 	fi
 
 	if $has_custom_cqfddir; then
